@@ -507,6 +507,7 @@ function compare(_a) {
     return __awaiter(this, arguments, void 0, function* ({ owner, repo, baseRef, headRef }) {
         const config = yield (0, config_1.readConfig)();
         let snapshot_warnings = '';
+        core.debug('COOOMPPPAAAREE!!!');
         if (config.check_all_dependencies) {
             // Fetch the full dependency graph for the head reference
             const headDependencies = yield octo.request('GET /repos/{owner}/{repo}/dependency-graph/snapshots/{ref}', {

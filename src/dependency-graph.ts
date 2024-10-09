@@ -27,6 +27,7 @@ export async function compare({
 }): Promise<ComparisonResponse> {
   const config = await readConfig()
   let snapshot_warnings = ''
+  core.debug('COOOMPPPAAAREE!!!')
 
   if (config.check_all_dependencies) {
     // Fetch the full dependency graph for the head reference
