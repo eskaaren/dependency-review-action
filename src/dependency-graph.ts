@@ -15,11 +15,11 @@ const octo = new retryingOctokit(
 )
 
 export async function compare({
-                                owner,
-                                repo,
-                                baseRef,
-                                headRef
-                              }: {
+  owner,
+  repo,
+  baseRef,
+  headRef
+}: {
   owner: string
   repo: string
   baseRef: string
@@ -30,11 +30,16 @@ export async function compare({
 
   if (config.check_all_dependencies) {
     // Fetch the full dependency graph for the head reference
-    const headDependencies = await octo.request('GET /repos/{owner}/{repo}/dependency-graph/snapshots/{ref}', {
-      owner,
-      repo,
-      ref: headRef
-    })
+    const headDependencies = await octo.request(
+      'GET /repos/{owner}/{repo}/dependency-graph/snapshots/{ref}',
+      {
+        owner,
+        repo,
+        ref: headRef
+      }
+    )
+
+    console.log('headDependencies', headDependencies)
 
     // Parse the dependencies using the existing schema
     const headChanges = ChangesSchema.parse(headDependencies.data)
@@ -50,15 +55,18 @@ export async function compare({
     }
 
     return ComparisonResponseSchema.parse({
-      changes: { head: headChanges },
+      changes: {head: headChanges},
       snapshot_warnings
     })
   } else {
-    const changes = await octo.request('GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}', {
-      owner,
-      repo,
-      basehead: `${baseRef}...${headRef}`
-    })
+    const changes = await octo.request(
+      'GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}',
+      {
+        owner,
+        repo,
+        basehead: `${baseRef}...${headRef}`
+      }
+    )
 
     if (
       changes.headers[SnapshotWarningsHeader] &&
