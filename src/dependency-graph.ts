@@ -39,7 +39,7 @@ export async function compare({
       }
     )
 
-    console.log('headDependencies', headDependencies)
+    core.info(`headDependencies: ${JSON.stringify(headDependencies)}`)
 
     // Parse the dependencies using the existing schema
     const headChanges = ChangesSchema.parse(headDependencies.data)
