@@ -12,6 +12,9 @@ name: 'Dependency Review'
 description: 'Prevent the introduction of dependencies with known vulnerabilities'
 author: 'GitHub'
 inputs:
+  check-all-dependencies:
+    description: Check all dependencies, not just the ones that changed.
+    required: false
   repo-token:
     description: Token for the repository. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`.
     required: false
