@@ -80,6 +80,7 @@ async function run(): Promise<void> {
     )
 
     const changes = comparison.changes
+    core.debug(`Changes: ${JSON.stringify(changes)}`)
     const snapshot_warnings = comparison.snapshot_warnings
 
     if (!changes) {
