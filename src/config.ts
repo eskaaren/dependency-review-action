@@ -26,6 +26,8 @@ export async function readConfig(): Promise<ConfigurationOptions> {
 }
 
 function readInlineConfig(): ConfigurationOptionsPartial {
+  const check_all_dependencies =
+    getOptionalBoolean('check-all-dependencies') ?? false
   const fail_on_severity = getOptionalInput('fail-on-severity')
   const fail_on_scopes = parseList(getOptionalInput('fail-on-scopes'))
   const allow_licenses = parseList(getOptionalInput('allow-licenses'))
@@ -57,6 +59,7 @@ function readInlineConfig(): ConfigurationOptionsPartial {
   validateLicenses('deny-licenses', deny_licenses)
 
   const keys = {
+    check_all_dependencies,
     fail_on_severity,
     fail_on_scopes,
     allow_licenses,

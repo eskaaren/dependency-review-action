@@ -119,7 +119,8 @@ export const ConfigurationOptionsSchema = z
         z.enum(['always', 'never', 'on-failure'])
       ])
       .default('never'),
-    warn_only: z.boolean().default(false)
+    warn_only: z.boolean().default(false),
+    check_all_dependencies: z.boolean().optional() // Added this line
   })
   .transform(config => {
     if (config.comment_summary_in_pr === true) {

@@ -8,6 +8,17 @@ beforeEach(() => {
   clearInputs()
 })
 
+test('it defaults to false for check_all_dependencies', async () => {
+  const config = await readConfig()
+  expect(config.check_all_dependencies).toEqual(false)
+})
+
+test('it reads check_all_dependencies from input', async () => {
+  setInput('check-all-dependencies', 'true')
+  const config = await readConfig()
+  expect(config.check_all_dependencies).toEqual(true)
+})
+
 test('it defaults to low severity', async () => {
   const config = await readConfig()
   expect(config.fail_on_severity).toEqual('low')
