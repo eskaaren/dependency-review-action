@@ -63,6 +63,8 @@ async function getComparison(
 
 async function run(): Promise<void> {
   try {
+    core.debug('STAAAAAARRRTTT!!!!')
+
     const config = await readConfig()
 
     const refs = getRefs(config, github.context)

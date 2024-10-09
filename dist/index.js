@@ -893,6 +893,7 @@ function getComparison(baseRef, headRef, retryOpts) {
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.debug('STAAAAAARRRTTT!!!!');
             const config = yield (0, config_1.readConfig)();
             const refs = (0, git_refs_1.getRefs)(config, github.context);
             const comparison = yield getComparison(refs.base, refs.head, config.retry_on_snapshot_warnings
