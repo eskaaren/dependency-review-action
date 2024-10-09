@@ -39,7 +39,7 @@ export async function compare({
       }
     )
 
-    core.info(`headDependencies: ${JSON.stringify(headDependencies)}`)
+    core.debug(`headDependencies: ${JSON.stringify(headDependencies)}`)
 
     // Parse the dependencies using the existing schema
     const headChanges = ChangesSchema.parse(headDependencies.data)
@@ -59,7 +59,7 @@ export async function compare({
       snapshot_warnings
     })
   } else {
-    core.info('headDependencies: NOOOOOOOOOO!!!!!!')
+    core.debug('NOOOOOOOOOO!!!!!! NOOOOOOO!!!!!')
 
     const changes = await octo.request(
       'GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}',
