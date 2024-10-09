@@ -138,6 +138,235 @@ function findCommentByMarker(commentBodyIncludes) {
 
 /***/ }),
 
+/***/ 88:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readConfig = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
+const path_1 = __importDefault(__nccwpck_require__(1017));
+const yaml_1 = __importDefault(__nccwpck_require__(4083));
+const core = __importStar(__nccwpck_require__(2186));
+const z = __importStar(__nccwpck_require__(3301));
+const schemas_1 = __nccwpck_require__(8774);
+const utils_1 = __nccwpck_require__(918);
+const spdx_1 = __nccwpck_require__(8590);
+function readConfig() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const inlineConfig = readInlineConfig();
+        const configFile = getOptionalInput('config-file');
+        if (configFile !== undefined) {
+            const externalConfig = yield readConfigFile(configFile);
+            return schemas_1.ConfigurationOptionsSchema.parse(Object.assign(Object.assign({}, externalConfig), inlineConfig));
+        }
+        return schemas_1.ConfigurationOptionsSchema.parse(inlineConfig);
+    });
+}
+exports.readConfig = readConfig;
+function readInlineConfig() {
+    var _a;
+    const check_all_dependencies = (_a = getOptionalBoolean('check-all-dependencies')) !== null && _a !== void 0 ? _a : false;
+    const fail_on_severity = getOptionalInput('fail-on-severity');
+    const fail_on_scopes = parseList(getOptionalInput('fail-on-scopes'));
+    const allow_licenses = parseList(getOptionalInput('allow-licenses'));
+    const deny_licenses = parseList(getOptionalInput('deny-licenses'));
+    const allow_dependencies_licenses = parseList(getOptionalInput('allow-dependencies-licenses'));
+    const deny_packages = parseList(getOptionalInput('deny-packages'));
+    const deny_groups = parseList(getOptionalInput('deny-groups'));
+    const allow_ghsas = parseList(getOptionalInput('allow-ghsas'));
+    const license_check = getOptionalBoolean('license-check');
+    const vulnerability_check = getOptionalBoolean('vulnerability-check');
+    const base_ref = getOptionalInput('base-ref');
+    const head_ref = getOptionalInput('head-ref');
+    const comment_summary_in_pr = getOptionalInput('comment-summary-in-pr');
+    const retry_on_snapshot_warnings = getOptionalBoolean('retry-on-snapshot-warnings');
+    const retry_on_snapshot_warnings_timeout = getOptionalNumber('retry-on-snapshot-warnings-timeout');
+    const warn_only = getOptionalBoolean('warn-only');
+    const show_openssf_scorecard = getOptionalBoolean('show-openssf-scorecard');
+    const warn_on_openssf_scorecard_level = getOptionalNumber('warn-on-openssf-scorecard-level');
+    validateLicenses('allow-licenses', allow_licenses);
+    validateLicenses('deny-licenses', deny_licenses);
+    const keys = {
+        check_all_dependencies,
+        fail_on_severity,
+        fail_on_scopes,
+        allow_licenses,
+        deny_licenses,
+        deny_packages,
+        deny_groups,
+        allow_dependencies_licenses,
+        allow_ghsas,
+        license_check,
+        vulnerability_check,
+        base_ref,
+        head_ref,
+        comment_summary_in_pr,
+        retry_on_snapshot_warnings,
+        retry_on_snapshot_warnings_timeout,
+        warn_only,
+        show_openssf_scorecard,
+        warn_on_openssf_scorecard_level
+    };
+    return Object.fromEntries(Object.entries(keys).filter(([_, value]) => value !== undefined));
+}
+function getOptionalNumber(name) {
+    const value = core.getInput(name);
+    const parsed = z.string().regex(/^\d+$/).transform(Number).safeParse(value);
+    return parsed.success ? parsed.data : undefined;
+}
+function getOptionalBoolean(name) {
+    const value = core.getInput(name);
+    return value.length > 0 ? core.getBooleanInput(name) : undefined;
+}
+function getOptionalInput(name) {
+    const value = core.getInput(name);
+    return value.length > 0 ? value : undefined;
+}
+function parseList(list) {
+    if (list === undefined) {
+        return list;
+    }
+    else {
+        return list.split(',').map(x => x.trim());
+    }
+}
+function validateLicenses(key, licenses) {
+    if (licenses === undefined) {
+        return;
+    }
+    const invalid_licenses = licenses.filter(license => !(0, spdx_1.isValid)(license));
+    if (invalid_licenses.length > 0) {
+        throw new Error(`Invalid license(s) in ${key}: ${invalid_licenses.join(', ')}`);
+    }
+}
+function readConfigFile(filePath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // match a remote config (e.g. 'owner/repo/filepath@someref')
+        const format = new RegExp('(?<owner>[^/]+)/(?<repo>[^/]+)/(?<path>[^@]+)@(?<ref>.*)');
+        let data;
+        const pieces = format.exec(filePath);
+        try {
+            if ((pieces === null || pieces === void 0 ? void 0 : pieces.groups) && pieces.length === 5) {
+                data = yield getRemoteConfig({
+                    owner: pieces.groups.owner,
+                    repo: pieces.groups.repo,
+                    path: pieces.groups.path,
+                    ref: pieces.groups.ref
+                });
+            }
+            else {
+                data = fs.readFileSync(path_1.default.resolve(filePath), 'utf-8');
+            }
+            return parseConfigFile(data);
+        }
+        catch (error) {
+            throw new Error(`Unable to fetch or parse config file: ${error.message}`);
+        }
+    });
+}
+function parseConfigFile(configData) {
+    try {
+        const data = yaml_1.default.parse(configData);
+        // These are the options that we support where the user can provide
+        // either a YAML list or a comma-separated string.
+        const listKeys = [
+            'allow-licenses',
+            'deny-licenses',
+            'fail-on-scopes',
+            'allow-ghsas',
+            'allow-dependencies-licenses',
+            'deny-packages',
+            'deny-groups'
+        ];
+        for (const key of Object.keys(data)) {
+            // strings can contain list values (e.g. 'MIT, Apache-2.0'). In this
+            // case we need to parse that into a list (e.g. ['MIT', 'Apache-2.0']).
+            if (listKeys.includes(key)) {
+                const val = data[key];
+                if (typeof val === 'string') {
+                    data[key] = val.split(',').map(x => x.trim());
+                }
+            }
+            // perform SPDX validation
+            if (key === 'allow-licenses' || key === 'deny-licenses') {
+                validateLicenses(key, data[key]);
+            }
+            // get rid of the ugly dashes from the actions conventions
+            if (key.includes('-')) {
+                data[key.replace(/-/g, '_')] = data[key];
+                delete data[key];
+            }
+        }
+        return data;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+function getRemoteConfig(configOpts) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { data } = yield (0, utils_1.octokitClient)('external-repo-token', false).rest.repos.getContent({
+                mediaType: {
+                    format: 'raw'
+                },
+                owner: configOpts.owner,
+                repo: configOpts.repo,
+                path: configOpts.path,
+                ref: configOpts.ref
+            });
+            // When using mediaType.format = 'raw', the response.data is a string
+            // but this is not reflected in the return type of getContent, so we're
+            // casting the return value to a string.
+            return z.string().parse(data);
+        }
+        catch (error) {
+            core.debug(error);
+            throw new Error('Error fetching remote config file');
+        }
+    });
+}
+
+
+/***/ }),
+
 /***/ 2134:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -269,31 +498,50 @@ exports.compare = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const githubUtils = __importStar(__nccwpck_require__(3030));
 const retry = __importStar(__nccwpck_require__(6298));
+const config_1 = __nccwpck_require__(88);
 const schemas_1 = __nccwpck_require__(8774);
 const retryingOctokit = githubUtils.GitHub.plugin(retry.retry);
 const SnapshotWarningsHeader = 'x-github-dependency-graph-snapshot-warnings';
 const octo = new retryingOctokit(githubUtils.getOctokitOptions(core.getInput('repo-token', { required: true })));
 function compare(_a) {
     return __awaiter(this, arguments, void 0, function* ({ owner, repo, baseRef, headRef }) {
+        const config = yield (0, config_1.readConfig)();
         let snapshot_warnings = '';
-        const changes = yield octo.paginate({
-            method: 'GET',
-            url: '/repos/{owner}/{repo}/dependency-graph/compare/{basehead}',
-            owner,
-            repo,
-            basehead: `${baseRef}...${headRef}`,
-            per_page: 5
-        }, response => {
-            if (response.headers[SnapshotWarningsHeader] &&
-                typeof response.headers[SnapshotWarningsHeader] === 'string') {
-                snapshot_warnings = Buffer.from(response.headers[SnapshotWarningsHeader], 'base64').toString('utf-8');
+        if (config.check_all_dependencies) {
+            // Fetch the full dependency graph for the head reference
+            const headDependencies = yield octo.request('GET /repos/{owner}/{repo}/dependency-graph/snapshots/{ref}', {
+                owner,
+                repo,
+                ref: headRef
+            });
+            core.debug(`headDependencies: ${JSON.stringify(headDependencies)}`);
+            // Parse the dependencies using the existing schema
+            const headChanges = schemas_1.ChangesSchema.parse(headDependencies.data);
+            if (headDependencies.headers[SnapshotWarningsHeader] &&
+                typeof headDependencies.headers[SnapshotWarningsHeader] === 'string') {
+                snapshot_warnings = Buffer.from(headDependencies.headers[SnapshotWarningsHeader], 'base64').toString('utf-8');
             }
-            return schemas_1.ChangesSchema.parse(response.data);
-        });
-        return schemas_1.ComparisonResponseSchema.parse({
-            changes,
-            snapshot_warnings
-        });
+            return schemas_1.ComparisonResponseSchema.parse({
+                changes: { head: headChanges },
+                snapshot_warnings
+            });
+        }
+        else {
+            core.debug('NOOOOOOOOOO!!!!!! NOOOOOOO!!!!!');
+            const changes = yield octo.request('GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}', {
+                owner,
+                repo,
+                basehead: `${baseRef}...${headRef}`
+            });
+            if (changes.headers[SnapshotWarningsHeader] &&
+                typeof changes.headers[SnapshotWarningsHeader] === 'string') {
+                snapshot_warnings = Buffer.from(changes.headers[SnapshotWarningsHeader], 'base64').toString('utf-8');
+            }
+            return schemas_1.ComparisonResponseSchema.parse({
+                changes: schemas_1.ChangesSchema.parse(changes.data),
+                snapshot_warnings
+            });
+        }
     });
 }
 exports.compare = compare;
@@ -654,6 +902,7 @@ function run() {
                 }
                 : undefined);
             const changes = comparison.changes;
+            core.debug(`Changes: ${JSON.stringify(changes)}`);
             const snapshot_warnings = comparison.snapshot_warnings;
             if (!changes) {
                 core.info('No Dependency Changes found. Skipping Dependency Review.');
@@ -1132,7 +1381,8 @@ exports.ConfigurationOptionsSchema = z
         z.enum(['always', 'never', 'on-failure'])
     ])
         .default('never'),
-    warn_only: z.boolean().default(false)
+    warn_only: z.boolean().default(false),
+    check_all_dependencies: z.boolean().optional() // Added this line
 })
     .transform(config => {
     if (config.comment_summary_in_pr === true) {
@@ -50263,6 +50513,8 @@ function readConfig() {
 }
 exports.readConfig = readConfig;
 function readInlineConfig() {
+    var _a;
+    const check_all_dependencies = (_a = getOptionalBoolean('check-all-dependencies')) !== null && _a !== void 0 ? _a : false;
     const fail_on_severity = getOptionalInput('fail-on-severity');
     const fail_on_scopes = parseList(getOptionalInput('fail-on-scopes'));
     const allow_licenses = parseList(getOptionalInput('allow-licenses'));
@@ -50284,6 +50536,7 @@ function readInlineConfig() {
     validateLicenses('allow-licenses', allow_licenses);
     validateLicenses('deny-licenses', deny_licenses);
     const keys = {
+        check_all_dependencies,
         fail_on_severity,
         fail_on_scopes,
         allow_licenses,
@@ -50748,7 +51001,8 @@ exports.ConfigurationOptionsSchema = z
         z.enum(['always', 'never', 'on-failure'])
     ])
         .default('never'),
-    warn_only: z.boolean().default(false)
+    warn_only: z.boolean().default(false),
+    check_all_dependencies: z.boolean().optional() // Added this line
 })
     .transform(config => {
     if (config.comment_summary_in_pr === true) {
