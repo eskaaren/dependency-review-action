@@ -59,6 +59,8 @@ export async function compare({
       snapshot_warnings
     })
   } else {
+    core.info('headDependencies: NOOOOOOOOOO!!!!!!')
+
     const changes = await octo.request(
       'GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}',
       {
